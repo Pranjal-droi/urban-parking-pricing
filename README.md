@@ -1,59 +1,97 @@
+# 🅿️ Dynamic Parking Pricing Engine
 
-Dynamic Pricing for Urban Parking Lots**
+A real-time intelligent pricing system designed to optimize urban parking revenue and availability. This system dynamically adjusts parking fees based on occupancy, demand, traffic, vehicle types, and competitive pressure—built from scratch using **Python**, **Pathway**, and **Bokeh** with no external machine learning libraries.
 
-### 🚀 Overview
-This project implements a real-time dynamic pricing engine for urban parking lots using:
-- 📈 Historical and real-time features
-- 🧠 Three progressively complex models
-- 📊 Interactive Bokeh dashboard for live visualization
+---
 
-Built as part of **Summer Analytics 2025** organized by the Consulting & Analytics Club.
+## 📌 Table of Contents
 
-### 📁 Contents
-- `Dynamic_Pricing_Models.ipynb` — Main notebook with code, explanations, and dashboard
-- `dataset.csv` — Provided dataset with 14 parking lots over 73 days
-- `README.md` — Project summary and usage
+- [🚀 Overview](#-overview)
+- [📂 Dataset Description](#-dataset-description)
+- [🧠 Pricing Models](#-pricing-models)
+- [⚙️ Architecture](#️-architecture)
+- [📦 Tech Stack](#-tech-stack)
+- [🔧 Setup Instructions](#-setup-instructions)
+- [📊 Visualization](#-visualization)
+- [📉 Anomaly Detection](#-anomaly-detection)
+- [📈 Optimization Strategy](#-optimization-strategy)
+- [🧪 Testing & Simulation](#-testing--simulation)
+- [📚 Future Extensions](#-future-extensions)
+- [🤝 Author](#-author)
 
-### 📊 Models Implemented
-1. **Model 1: Baseline Linear Pricing**
-   - Price increases linearly with occupancy rate
+---
 
-2. **Model 2: Demand-Based Pricing**
-   - Uses occupancy, queue length, traffic, special days, and vehicle type
-   - Applies a normalized demand score
+## 🚀 Overview
 
-3. **Model 3: Competitive Pricing**
-   - Adjusts price based on competitor proximity and price
-   - Uses geographic distance (within 1km) between lots
+This project simulates a **real-time dynamic pricing engine** for 14 parking lots in a city. It operates using three progressive models:
+- **Model 1**: Linear pricing based on occupancy
+- **Model 2**: Demand-responsive pricing using engineered features
+- **Model 3**: Competitive pricing adjustment based on nearby lot prices
 
-### 💻 How to Run
-#### ➤ Option 1: Jupyter Notebook
-```bash
-jupyter notebook Dynamic_Pricing_Models.ipynb
-```
+The system is real-time-capable via [Pathway](https://pathway.com), and prices are visualized with an interactive dashboard using **Bokeh**.
 
-#### ➤ Option 2: Run the Bokeh Dashboard
-```bash
-bokeh serve --show Dynamic_Pricing_Models.ipynb
-```
-This opens an interactive dashboard where you can select parking lots and compare pricing across models.
+---
 
-### 📦 Dependencies
-```bash
-pip install pandas numpy geopy bokeh
-```
+## 📂 Dataset Description
 
-### 📌 Dataset Features
-- `SystemCodeNumber`, `Latitude`, `Longitude`
-- `Capacity`, `Occupancy`, `QueueLength`
-- `VehicleType`, `TrafficConditionNearby`, `IsSpecialDay`
-- Timestamps every 30 minutes from 8:00 AM to 4:30 PM
+The engine reads from a CSV that simulates real-time updates from parking sensors.
 
-### 🔍 Visualizations
-- Real-time line plots for each pricing model
-- Dropdown to switch between parking lots
+### Key Fields:
+| Column | Description |
+|--------|-------------|
+| `Occupancy` | Vehicles parked |
+| `Capacity` | Total parking capacity (static) |
+| `QueueLength` | Waiting vehicles |
+| `TrafficConditionNearby` | Categorical: `low`, `average`, `high` |
+| `VehicleType` | `car`, `bike`, `truck`, `cycle` |
+| `IsSpecialDay` | Binary: 1 if holiday or special event |
+| `LastUpdatedDate`, `LastUpdatedTime` | Timestamp of observation |
 
-### 🧠 Team
-- Participant: _Your Name_
-- Event: Summer Analytics 2025
-- Hosted by: Consulting & Analytics Club × Pathway
+---
+
+## 🧠 Pricing Models
+
+### 🔹 Model 1: Baseline Linear
+price = base_price * (1 + occupancy / capacity)
+
+
+###🔹 Model 2: Demand-Based
+
+Uses normalized features:
+Occupancy rate
+Queue length
+Traffic intensity
+Vehicle type weight
+Event flag
+Price is scaled linearly between $5 and $20 based on a composite demand score.
+
+###🔹 Model 3: Competitor-Aware
+
+Computes Haversine distance to competing lots
+Adjusts price if competitors are cheaper
+
+             ARCHITECTURE
+                
+                +------------------+
+                | Parking Data CSV |
+                +--------+---------+
+                         |
+                         ▼
+          +----------------------------+
+          | Data Preprocessing & Merge |
+          +----------------------------+
+                         |
+                         ▼
+          +-----------------------------+
+          |  Feature Engineering & Logic|
+          | (Occupancy, Queue, Events…) |
+          +-----------------------------+
+             |     |     |
+             ▼     ▼     ▼
+         Model 1  Model 2  Model 3
+             |     |     |
+             +-----+-----+
+                   ▼
+         +------------------+
+         | Price Dashboard  |
+         +------------------+
