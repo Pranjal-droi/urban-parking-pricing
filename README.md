@@ -1,78 +1,80 @@
 # 🚗 Dynamic Pricing for Urban Parking Lots
 
 Capstone Project — Summer Analytics 2025  
-Hosted by: Consulting & Analytics Club × Pathway
+Hosted by: Consulting & Analytics Club × Pathway  
 
 ---
 
-## 📌 Objective
+## 📌 Project Overview
 
-This project implements a **real-time dynamic pricing engine** for 14 urban parking lots based on:
+Urban parking is a limited and highly dynamic resource. Static pricing often results in either underutilization or overcrowding of parking lots.  
+This project simulates and builds a **real-time dynamic pricing engine** for 14 urban parking spaces using a combination of **data-driven models**, **geospatial intelligence**, and **real-time stream processing**.
 
-- 🅿️ Occupancy
-- 🚗 Vehicle type (car/bike/truck)
-- 🕐 Queue length
-- 🚦 Traffic congestion
-- 🎉 Special events
-- 📍 Nearby competitor prices
-
-The pricing logic evolves across **3 progressively intelligent models**.
+The goal is to:
+- Adjust parking prices in real-time
+- Improve space utilization
+- Ensure fairness and responsiveness using explainable logic
 
 ---
 
-## 📊 Models Implemented
+## 🧰 Tech Stack
 
-### ✅ Model 1: Baseline Linear Model
-- Price increases linearly with occupancy ratio:
-  \[
-  Price_{t+1} = Price_t + α \cdot \left(\frac{Occupancy}{Capacity}\right)
-  \]
-
-### ✅ Model 2: Demand-Based Pricing
-- Combines multiple features into a demand score
-- Normalized demand adjusts price:
-  \[
-  Price = BasePrice \cdot (1 + λ \cdot NormalizedDemand)
-  \]
-
-### ✅ Model 3: Competitive Pricing
-- Adjusts price by comparing with nearby parking lots
-- Uses geolocation (lat-long) and distance matrix
+| Category        | Tools/Technologies                    |
+|----------------|----------------------------------------|
+| Language        | Python 3.9+                            |
+| Data Processing | Pandas, NumPy                          |
+| Real-Time Engine| [Pathway](https://pathway.com/)        |
+| Geospatial Calc | geopy                                  |
+| Visualization   | Bokeh                                  |
+| Hosting/Version | Google Colab, GitHub                   |
 
 ---
 
-## 🔄 Real-Time Simulation with Pathway
+## 🏗️ System Architecture
 
-- We simulate **streamed data** using Pathway's real-time engine
-- Custom pricing logic is applied on-the-fly
-- Output is continuously written to a JSON stream
+mermaid
+flowchart TD
+    A[Static Dataset (CSV)] -->|Simulated Stream| B[Pathway Engine]
+    B --> C[Feature Processing & Encoding]
+    C --> D1[Model 1: Linear Pricing]
+    C --> D2[Model 2: Demand-Based Pricing]
+    C --> D3[Model 3: Competitive Pricing]
+    D1 --> E[Unified Price Output Stream]
+    D2 --> E
+    D3 --> E
+    E --> F[JSON Output / Bokeh Visualization]
 
----
+🔄 Workflow & Logic
+🔸 Input
+18,000+ rows of 73 days of data (18 time points/day for 14 lots)
+Each row contains:
+Occupancy, Capacity, QueueLength
+VehicleType, TrafficConditionNearby, IsSpecialDay
+Latitude, Longitude
 
-## 📈 Visualizations
+🔸 Real-Time Processing with Pathway
+Pathway reads the static CSV and simulates real-time streaming
+Each row is treated as an event with a timestamp
 
-- Interactive line plots using **Bokeh**
-- Price trends for each model across all 14 parking lots
+Models Implemented
+✅ Model 1: Linear Pricing
+Simple baseline model using:
+Price(t+1) = Price(t) + α × (Occupancy / Capacity)
 
----
+✅ Model 2: Demand-Based Pricing
+Weighted scoring function:
+Demand = α·(Occupancy/Capacity) + β·Queue − γ·Traffic + δ·Special + ε·VehicleTypeWeight
 
-## 🚀 Run This Project in Colab
+Price:
+Price = BasePrice × (1 + λ × tanh(NormalizedDemand))
 
-Click below to open and run the notebook:
+✅ Model 3: Competitive Pricing
+Calculates distance matrix between lots
+Adjusts price up or down depending on proximity and competitor pricing
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/<your-username>/<your-repo>/blob/main/dynamic_pricing.ipynb)
+📈 Visualizations
+Real-time price trends for each lot are plotted using Bokeh, comparing:
+Linear pricing
+Demand-based pricing
+Competitive-adjusted pricing
 
-Replace `<your-username>` and `<your-repo>` with your actual GitHub handle and repository name.
-
----
-
-## 🛠️ Setup & Installation
-
-### Requirements:
-- Python 3.9+
-- Google Colab (no local setup needed)
-
-### For manual use:
-
-```bash
-pip install pathway pandas numpy bokeh geopy
