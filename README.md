@@ -1,97 +1,108 @@
-# 🅿️ Dynamic Parking Pricing Engine
+🅿️ Dynamic Pricing for Urban Parking Lots
+A real-time simulation project that implements intelligent pricing strategies for 14 urban parking lots using Python, Numpy, Pandas, and Bokeh — with Pathway support for streaming.
 
-A real-time intelligent pricing system designed to optimize urban parking revenue and availability. This system dynamically adjusts parking fees based on occupancy, demand, traffic, vehicle types, and competitive pressure—built from scratch using **Python**, **Pathway**, and **Bokeh** with no external machine learning libraries.
+Capstone project for Summer Analytics 2025 hosted by the Consulting & Analytics Club × Pathway.
 
----
+📁 Files
+bash
+Copy code
+├── dataset.csv                  # Parking data (upload manually in Colab)
+├── dynamic_pricing_notebook.ipynb  # Main Colab notebook
+├── README.md                    # Project documentation
+🚀 Setup & Installation
+✅ Google Colab
+Open the notebook in Google Colab
 
-## 📌 Table of Contents
+Install required packages:
 
-- [🚀 Overview](#-overview)
-- [📂 Dataset Description](#-dataset-description)
-- [🧠 Pricing Models](#-pricing-models)
-- [⚙️ Architecture](#️-architecture)
-- [📦 Tech Stack](#-tech-stack)
-- [🔧 Setup Instructions](#-setup-instructions)
-- [📊 Visualization](#-visualization)
-- [📉 Anomaly Detection](#-anomaly-detection)
-- [📈 Optimization Strategy](#-optimization-strategy)
-- [🧪 Testing & Simulation](#-testing--simulation)
-- [📚 Future Extensions](#-future-extensions)
-- [🤝 Author](#-author)
+python
+Copy code
+!pip install geopy bokeh --quiet
+Upload the dataset:
 
----
+python
+Copy code
+from google.colab import files
+uploaded = files.upload()  # Choose dataset.csv
+🔍 Dataset Description
+Collected over 73 days from 14 urban parking spaces, sampled every 30 minutes (18 time points/day).
 
-## 🚀 Overview
+Feature	Description
+Occupancy	Number of parked vehicles
+Capacity	Maximum lot capacity
+QueueLength	Waiting vehicles
+VehicleType	car, bike, truck
+TrafficConditionNearby	low, medium, high
+IsSpecialDay	1 for event/holiday, 0 otherwise
+Latitude, Longitude	Geolocation
+LastUpdatedTime	Timestamp for simulation
 
-This project simulates a **real-time dynamic pricing engine** for 14 parking lots in a city. It operates using three progressive models:
-- **Model 1**: Linear pricing based on occupancy
-- **Model 2**: Demand-responsive pricing using engineered features
-- **Model 3**: Competitive pricing adjustment based on nearby lot prices
+🧠 Models Implemented
+📘 Model 1: Baseline Linear Pricing
+Price increases linearly with occupancy:
 
-The system is real-time-capable via [Pathway](https://pathway.com), and prices are visualized with an interactive dashboard using **Bokeh**.
+Copy code
+Price_t+1 = Price_t + α * (Occupancy / Capacity)
+Starts from $10
 
----
+Smooth increase
 
-## 📂 Dataset Description
+Acts as a reference model
 
-The engine reads from a CSV that simulates real-time updates from parking sensors.
+📗 Model 2: Demand-Based Dynamic Pricing
+Pricing based on multiple real-world features:
 
-### Key Fields:
-| Column | Description |
-|--------|-------------|
-| `Occupancy` | Vehicles parked |
-| `Capacity` | Total parking capacity (static) |
-| `QueueLength` | Waiting vehicles |
-| `TrafficConditionNearby` | Categorical: `low`, `average`, `high` |
-| `VehicleType` | `car`, `bike`, `truck`, `cycle` |
-| `IsSpecialDay` | Binary: 1 if holiday or special event |
-| `LastUpdatedDate`, `LastUpdatedTime` | Timestamp of observation |
+ini
+Copy code
+Demand = α·(Occ/Cap) + β·Queue − γ·Traffic + δ·IsSpecialDay + ε·VehicleType
+Price = BasePrice * (1 + λ * NormalizedDemand)
+Demand is normalized
 
----
+Price bounded between $5 and $20
 
-## 🧠 Pricing Models
+📙 Model 3: Competitive Pricing
+Includes nearby lots (within 1km):
 
-### 🔹 Model 1: Baseline Linear
-price = base_price * (1 + occupancy / capacity)
+If a lot is full and neighbors are cheaper, reduce price
 
+If neighbors are expensive, increase price
 
-###🔹 Model 2: Demand-Based
+Uses Haversine distance with geopy
 
-Uses normalized features:
-Occupancy rate
-Queue length
-Traffic intensity
-Vehicle type weight
-Event flag
-Price is scaled linearly between $5 and $20 based on a composite demand score.
+📊 Visualization
+Interactive Bokeh plots for each lot:
 
-###🔹 Model 3: Competitor-Aware
+Linear vs Demand vs Competitive Prices
 
-Computes Haversine distance to competing lots
-Adjusts price if competitors are cheaper
+Real-time line plots
 
-             ARCHITECTURE
-                
-                +------------------+
-                | Parking Data CSV |
-                +--------+---------+
-                         |
-                         ▼
-          +----------------------------+
-          | Data Preprocessing & Merge |
-          +----------------------------+
-                         |
-                         ▼
-          +-----------------------------+
-          |  Feature Engineering & Logic|
-          | (Occupancy, Queue, Events…) |
-          +-----------------------------+
-             |     |     |
-             ▼     ▼     ▼
-         Model 1  Model 2  Model 3
-             |     |     |
-             +-----+-----+
-                   ▼
-         +------------------+
-         | Price Dashboard  |
-         +------------------+
+Enable visual comparison of model behavior
+
+python
+Copy code
+show(plot_prices('BHMBCCMKT01'))  # Example plot for one parking lot
+🔄 Real-Time (Optional)
+You can extend the notebook with:
+
+Pathway integration to simulate streaming
+
+Pricing engine reacting to real-time events
+
+Suggest rerouting to nearby lots when full
+
+Resources:
+
+Pathway Docs – First Realtime App
+
+✍️ Report Checklist (For Submission)
+✅ Dataset summary
+✅ Model explanations (with formulas)
+✅ Well-commented notebook
+✅ Visualizations using Bokeh
+✅ Justification of assumptions and pricing logic
+
+👨‍💻 Author
+Pranjal Tiwari
+Capstone Project · Summer Analytics 2025
+Consulting & Analytics Club, IITG
+
